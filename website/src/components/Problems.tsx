@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { RouterOutputs } from "~/utils/api";
+import { type RouterOutputs } from "~/utils/api";
 
 export function Problems(problems: {
   data: RouterOutputs["problem"]["getAll"] | undefined;

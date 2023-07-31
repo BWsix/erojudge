@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { type Prisma } from "@prisma/client";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
@@ -20,19 +20,24 @@ export const submissionRouter = createTRPCRouter({
         id: z.string().cuid(),
       })
     )
-    .query(({ ctx, input }) => {
-      return ctx.prisma.submission.findFirst({
+    .query(async ({ ctx, input }) => {
+      const submission = await ctx.prisma.submission.findFirst({
         where: { id: input.id },
         include: {
           problem: {
-            include: {
-              testcases: {
-                where: { is_example: { equals: true } },
-              },
+            select: {
+              id: true,
+              title: true,
             },
           },
         },
       });
+
+      if (!submission) return { found: false, submission: undefined };
+      if (submission.is_public) return { found: true, submission };
+      if (submission.userId === ctx.session?.user.id)
+        return { found: true, submission };
+      return { found: true, submission: undefined };
     }),
 
   getAll: publicProcedure.query(({ ctx }) => {

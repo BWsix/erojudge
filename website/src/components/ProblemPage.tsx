@@ -1,37 +1,52 @@
-import { RouterOutputs } from "~/utils/api";
+import { cpp } from "@codemirror/lang-cpp";
+import { python } from "@codemirror/lang-python";
+import { vim } from "@replit/codemirror-vim";
+import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
+import CodeMirror from "@uiw/react-codemirror";
+import { useState } from "react";
+import { type RouterOutputs } from "~/utils/api";
 
 export function Editor(props: {
   code: string;
   setCode: (value: string) => void;
-  setLanguage: (value: string) => void;
-  onClick: () => void;
+  language: string;
+  readOnly?: boolean;
 }) {
+  const [useDark, setUseDark] = useState(true);
+  const [useVim, setUseVim] = useState(true);
+
+  let language = cpp();
+  if (props.language === "c") language = cpp();
+  if (props.language === "cpp") language = cpp();
+  if (props.language === "py") language = python();
+  const theme = useDark ? githubDark : githubLight;
+  const extensions = [language, vim({ status: true })];
+  if (!useVim) extensions.pop(); // need to pop vim this way to satisfy typing
+
   return (
     <>
-      <h3>送出程式碼</h3>
-      <textarea
-        value={props.code}
-        onChange={(e) => props.setCode(e.target.value)}
-        style={{ width: "500px" }}
-      />
-      <br />
       <input
-        type="file"
-        onChange={(e) =>
-          e.target.files
-            ?.item(0)
-            ?.text()
-            .then((content) => {
-              props.setCode(content);
-            })
-        }
+        type="checkbox"
+        checked={useVim}
+        onChange={(e) => setUseVim(e.target.checked)}
       />
-      <select onChange={(e) => props.setLanguage(e.target.value)}>
-        <option value="cpp">c++ (17)</option>
-        <option value="c">c (11)</option>
-        <option value="py">python (3.9)</option>
-      </select>
-      <button onClick={props.onClick}>送出</button>
+      <label>vim</label>
+
+      <input
+        type="checkbox"
+        checked={useDark}
+        onChange={(e) => setUseDark(e.target.checked)}
+      />
+      <label>dark theme</label>
+
+      <CodeMirror
+        value={props.code}
+        onChange={(value) => props.setCode(value)}
+        theme={theme}
+        extensions={extensions}
+        readOnly={props.readOnly}
+        contentEditable={props.readOnly}
+      />
     </>
   );
 }
@@ -43,7 +58,14 @@ export function ProblemDescription(problem: {
   return (
     <>
       <h3>{problem.data.title}</h3>
-      <p>{problem.data.description}</p>
+      <p>
+        {problem.data.description.split("\n").map((line) => (
+          <>
+            {line}
+            <br />
+          </>
+        ))}
+      </p>
 
       <div>
         <div style={{ display: "inline-block" }}>

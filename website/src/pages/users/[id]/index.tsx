@@ -1,8 +1,8 @@
-import { useRouter } from "next/router";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { Header, MyHead } from "~/components/Misc";
-import { api } from "~/utils/api";
 import { Submissions } from "~/components/Submissions";
+import { api } from "~/utils/api";
 
 export default function ProblemPage() {
   const router = useRouter();
@@ -14,17 +14,12 @@ export default function ProblemPage() {
   if (!user.data) return <>not found</>;
   return (
     <>
-      <MyHead title={user.data.name as string} />
+      <MyHead title={user.data.name} />
       <main>
         <Header />
         <hr />
         <h3>{user.data.name}</h3>
-        <Image
-          src={user.data.image as string}
-          alt="avatar"
-          width={100}
-          height={100}
-        />
+        <Image src={user.data.image} alt="avatar" width={100} height={100} />
         <hr />
         <Submissions data={user.data.submission} />
       </main>

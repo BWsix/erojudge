@@ -30,18 +30,39 @@ export default function ProblemPage() {
         <hr />
         <ProblemDescription data={problem.data} />
         <hr />
-        {!session.data && <button onClick={() => signIn()}>signIn</button>}
-        {session.data && (
-          <Editor
-            code={code}
-            setCode={setCode}
-            setLanguage={setLanguage}
+        <h3>送出程式碼</h3>
+        <Editor
+          code={code}
+          setCode={(val) => setCode(val)}
+          language={language}
+        />
+        <input
+          type="file"
+          onChange={(e) =>
+            e.target.files
+              ?.item(0)
+              ?.text()
+              .then((content) => setCode(content))
+          }
+        />
+        <select onChange={(e) => setLanguage(e.target.value)}>
+          <option value="cpp">c++ (17)</option>
+          <option value="c">c (11)</option>
+          <option value="py">python (3.9)</option>
+        </select>
+        {session.status === "unauthenticated" && (
+          <button onClick={() => signIn()}>signIn</button>
+        )}
+        {session.status === "authenticated" && (
+          <button
             onClick={() =>
               submit
                 .mutateAsync({ id, code, language })
                 .then(({ id }) => router.push(`/submissions/${id}`))
             }
-          />
+          >
+            送出
+          </button>
         )}
       </main>
     </>

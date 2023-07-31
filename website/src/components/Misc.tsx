@@ -23,34 +23,47 @@ export function Header() {
   return (
     <>
       <h1>EroJudge</h1>
-      <p>An industry-leading online coding platform</p>
+      <p>
+        An industry-leading online coding platform
+        <br />
+        (definitly <b>not</b> a shitily thrown together knockoff of some online
+        judge out there)
+      </p>
+
       <Link href="/">Home</Link>
 
       <span> | </span>
-
       <Link href="/problems">Problems</Link>
 
       <span> | </span>
-
       <Link href="/users">Users</Link>
 
       <span> | </span>
-
       <Link href="/submissions">Submissions</Link>
 
-      <span> | </span>
+      {session.status === "authenticated" &&
+        session.data.user.role === "Admin" && (
+          <>
+            <span> | </span>
+            <Link href="/problems/new">New Problem</Link>
+          </>
+        )}
 
-      {!session.data && <span>Guest</span>}
-      {session.data && (
+      <span> | </span>
+      {session.status === "unauthenticated" && <span>Guest</span>}
+      {session.status === "authenticated" && (
         <Link href={`/users/${session.data.user.id}`}>
           {session.data.user.name}
         </Link>
       )}
 
       <span> | </span>
-
-      {!session.data && <button onClick={() => signIn()}>Sign In</button>}
-      {session.data && <button onClick={() => signOut()}>Sign Out</button>}
+      {session.status === "unauthenticated" && (
+        <button onClick={() => signIn()}>Sign In</button>
+      )}
+      {session.status === "authenticated" && (
+        <button onClick={() => signOut()}>Sign Out</button>
+      )}
     </>
   );
 }

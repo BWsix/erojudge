@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { RouterOutputs } from "~/utils/api";
+import { type RouterOutputs } from "~/utils/api";
 
 export function Users(users: {
   data: RouterOutputs["user"]["getAll"] | undefined;
@@ -13,7 +13,7 @@ export function Users(users: {
           <li key={user.id}>
             <Link href={`/users/${user.id}`}>
               <Image
-                src={user.image as string}
+                src={user.image}
                 alt="avatar"
                 style={{ textAlign: "center" }}
                 width={50}

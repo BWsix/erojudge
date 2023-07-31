@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  compiler:
+    build:
+      context: ./compiler
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    image: compiler
+    environment:
+      - ADDRESS=0.0.0.0:8080
+  website:
+    platform: "linux/amd64"
+    build:
+      context: ./website
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_CLIENTVAR: "clientvar"
+    working_dir: /app
+    ports:
+      - 3000:3000
+    image: website
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - compiler
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+

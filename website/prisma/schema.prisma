@@ -15,12 +15,18 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+enum Role {
+    User
+    Admin
+}
+
 model Submission {
     id        String   @id @default(cuid())
     code      String
     status    String
     message   String
     language  String
+    is_public Boolean  @default(false)
     createdAt DateTime @default(now())
     problem   Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
     problemId Int
@@ -39,13 +45,14 @@ model Problem {
 }
 
 model Testcase {
-    id         String  @id @default(cuid())
-    is_example Boolean
-    input      String
-    output     String
-    timeout    Int     @default(1000)
-    problem    Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
-    problemId  Int
+    id          String  @id @default(cuid())
+    is_example  Boolean
+    input       String
+    output      String
+    hide_output Boolean @default(false)
+    timeout     Int     @default(1000)
+    problem     Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+    problemId   Int
 }
 
 // Necessary for Next auth
@@ -77,10 +84,11 @@ model Session {
 
 model User {
     id            String       @id @default(cuid())
-    name          String?
+    role          Role         @default(User)
+    name          String
     email         String?      @unique
     emailVerified DateTime?
-    image         String?
+    image         String
     accounts      Account[]
     sessions      Session[]
     submission    Submission[]

@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { RouterOutputs } from "~/utils/api";
+import { type RouterOutputs } from "~/utils/api";
+import { Editor } from "./ProblemPage";
+import CodeMirror from "@uiw/react-codemirror";
 
 export function Submissions(submissions: {
   data: RouterOutputs["submission"]["getAll"] | undefined;
@@ -37,20 +39,16 @@ export function SubmitResult(submit: {
   return (
     <>
       <h3>Code submitted</h3>
-      <textarea readOnly value={submit.data.code} style={{ width: "700px" }} />
+      <Editor
+        code={submit.data.code}
+        setCode={() => {}}
+        language={submit.data.language}
+        readOnly
+      />
       <hr />
       <h3>送出結果</h3>
       <p>{submit.data.status}</p>
-      {submit.data.message !== "" && (
-        <>
-          <textarea
-            readOnly
-            value={submit.data.message}
-            style={{ width: "700px" }}
-          />
-          <br />
-        </>
-      )}
+      <CodeMirror value={submit.data.message} editable={false} />
     </>
   );
 }

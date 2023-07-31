@@ -14,6 +14,7 @@ pub struct Testcase {
     pub timeout: u64,
     pub input: String,
     pub output: String,
+    pub hide_output: Option<bool>,
 }
 
 #[derive(serde::Deserialize)]
@@ -73,8 +74,11 @@ pub trait Compiler {
                     if stdout.trim() == testcase.output.trim() {
                         continue;
                     }
-                    let error_message =
-                        format!("Input:\n{}\n\nOutput:\n{}", testcase.input, stdout);
+                    let error_message = if testcase.hide_output.is_some() {
+                        format!("Your program failed on a hidden testcase, how unlucky!")
+                    } else {
+                        format!("Input:\n{}\n\nOutput:\n{}", testcase.input, stdout)
+                    };
                     return Ok(ExecutionResult::WrongAnswer((id, error_message)));
                 }
                 None => {
