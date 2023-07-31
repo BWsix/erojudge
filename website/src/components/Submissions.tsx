@@ -1,20 +1,14 @@
 import Link from "next/link";
-import { RouterOutputs, api } from "~/utils/api";
+import { RouterOutputs } from "~/utils/api";
 
-export function Submissions(props: {
-  data?: RouterOutputs["submission"]["getAll"];
+export function Submissions(submissions: {
+  data: RouterOutputs["submission"]["getAll"] | undefined;
 }) {
-  const submissions = api.submission.getAll.useQuery(undefined, {
-    placeholderData: props.data,
-    enabled: !props.data,
-  });
-
-  if (!submissions.data) return <>loading</>;
   return (
     <>
       <h3>Submissions</h3>
       <ul>
-        {submissions.data.map((submission) => (
+        {submissions.data?.map((submission) => (
           <li key={submission.id}>
             <Link href={`/users/${submission.user.id}`}>
               <span>{submission.user.name}</span>

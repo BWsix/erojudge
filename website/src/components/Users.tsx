@@ -1,12 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { RouterOutputs, api } from "~/utils/api";
+import { RouterOutputs } from "~/utils/api";
 
-export function Users(props: { data?: RouterOutputs["user"]["getAll"] }) {
-  const users = api.user.getAll.useQuery(undefined, {
-    placeholderData: props.data,
-    enabled: !props.data,
-  });
+export function Users(users: {
+  data: RouterOutputs["user"]["getAll"] | undefined;
+}) {
   return (
     <>
       <h3>Users</h3>
