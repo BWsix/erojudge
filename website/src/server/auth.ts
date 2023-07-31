@@ -7,6 +7,7 @@ import {
 } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import GithubProvider from "next-auth/providers/github";
+import OsuProvider from "next-auth/providers/osu";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 
@@ -55,6 +56,10 @@ export const authOptions: NextAuthOptions = {
     GithubProvider({
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
+    }),
+    OsuProvider({
+      clientId: env.OSU_CLIENT_ID,
+      clientSecret: env.OSU_CLIENT_SECRET,
     }),
     /**
      * ...add more providers here.
