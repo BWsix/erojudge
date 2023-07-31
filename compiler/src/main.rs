@@ -35,18 +35,31 @@ async fn submit(submission: web::Json<api::Submission>) -> impl Responder {
     use api::ExecutionResult;
 
     let compiler: &dyn api::Compiler = match submission.language.as_str() {
-        "cpp" => &compilers::Cpp{},
-        "c" => &compilers::C{},
-        "py" => &compilers::Python{},
+        "cpp" => &compilers::Cpp {},
+        "c" => &compilers::C {},
+        "py" => &compilers::Python {},
         _ => unreachable!(),
     };
-    let execution_result = compiler.test(&submission.language, &submission.code, &submission.testcases);
+    let execution_result = compiler.test(
+        &submission.language,
+        &submission.code,
+        &submission.testcases,
+    );
     match execution_result {
-        Err(_) => Response::new("System Error", "Something went wrong with our build system."),
-        Ok(ExecutionResult::Success) => Response::new("Accepted", ""),
-        Ok(ExecutionResult::WrongAnswer((id, msg))) => Response::new(&format!("Wrong Answer #{id}"), &msg),
-        Ok(ExecutionResult::RuntimeError((id, msg))) => Response::new(&format!("Runtime Error #{id}"), &msg),
-        Ok(ExecutionResult::TimeoutError((id, msg))) => Response::new(&format!("Timeout Error #{id}"), &msg),
+        Err(_) => Response::new(
+            "System Error",
+            "Something went wrong with our build system.",
+        ),
+        Ok(ExecutionResult::Success) => Response::new("Accepted", "Congrats!"),
+        Ok(ExecutionResult::WrongAnswer((id, msg))) => {
+            Response::new(&format!("Wrong Answer #{id}"), &msg)
+        }
+        Ok(ExecutionResult::RuntimeError((id, msg))) => {
+            Response::new(&format!("Runtime Error #{id}"), &msg)
+        }
+        Ok(ExecutionResult::TimeoutError((id, msg))) => {
+            Response::new(&format!("Timeout Error #{id}"), &msg)
+        }
         Ok(ExecutionResult::CompileTimeError(msg)) => Response::new("Compile Error", &msg),
     }
 }
