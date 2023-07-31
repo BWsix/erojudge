@@ -1,11 +1,15 @@
 import Link from "next/link";
-import { api } from "~/utils/api";
+import { RouterOutputs, api } from "~/utils/api";
 
-export function Problems() {
-  const problems = api.problem.getAll.useQuery();
+export function Problems(props: { data?: RouterOutputs["problem"]["getAll"] }) {
+  const problems = api.problem.getAll.useQuery(undefined, {
+    placeholderData: props.data,
+    enabled: !props.data,
+  });
+
   return (
     <>
-      <h4>Problems:</h4>
+      <h3>Problems</h3>
       <ul>
         {problems.data?.map((problem) => (
           <li key={problem.id}>

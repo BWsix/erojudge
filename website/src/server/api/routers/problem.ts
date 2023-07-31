@@ -7,7 +7,7 @@ import {
 } from "~/server/api/trpc";
 
 export const problemRouter = createTRPCRouter({
-  submit: publicProcedure
+  submit: protectedProcedure
     .input(
       z.object({
         id: z.number(),
@@ -38,18 +38,30 @@ export const problemRouter = createTRPCRouter({
         body,
       };
       const res = await fetch(env.COMPILER_URL, options);
-      const output = (await res.json()) as { code: string; message: string };
-      return output;
+      const result = (await res.json()) as {
+        status: string;
+        message: string;
+      };
+      return await ctx.prisma.submission.create({
+        data: {
+          problemId: input.id,
+          code: input.code,
+          language: input.language,
+          status: result.status,
+          message: result.message,
+          userId: ctx.session.user.id,
+        },
+      });
     }),
 
   getDescription: publicProcedure
     .input(z.object({ id: z.number() }))
     .query(({ ctx, input }) => {
-      return ctx.prisma.problem.findUniqueOrThrow({
+      return ctx.prisma.problem.findUnique({
         where: { id: input.id },
         include: {
           testcases: {
-            where: { example: { equals: true } },
+            where: { is_example: { equals: true } },
             select: {
               input: true,
               output: true,
@@ -66,9 +78,5 @@ export const problemRouter = createTRPCRouter({
         title: true,
       },
     });
-  }),
-
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
   }),
 });

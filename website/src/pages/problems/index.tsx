@@ -1,19 +1,10 @@
-import Head from "next/head";
-import { Header } from "~/components/Header";
+import { MyHead, Header } from "~/components/Misc";
 import { Problems } from "~/components/Problems";
 
-export default function ProblemsHome() {
+export default function ProblemsPage() {
   return (
     <>
-      <Head>
-        <title>EroJudge - Problems</title>
-        <meta
-          name="description"
-          content="EroJudge - An industry-leading online coding platform"
-        />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
+      <MyHead title="Problems" />
       <main>
         <Header />
         <hr />

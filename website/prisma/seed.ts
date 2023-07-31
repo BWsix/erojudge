@@ -10,8 +10,8 @@ async function main() {
       outputSpec: "輸出題目指定的文字。",
       testcases: {
         create: [
-          { example: true, input: "bob", output: "goodbye, bob" },
-          { example: false, input: "alice", output: "goodbye, alice" },
+          { is_example: true, input: "bob", output: "goodbye, bob" },
+          { is_example: false, input: "alice", output: "goodbye, alice" },
         ],
       },
     },
@@ -25,9 +25,9 @@ async function main() {
       outputSpec: "對於每組輸入，輸出該兩整數的和。",
       testcases: {
         create: [
-          { example: true, input: "34 35", output: "69" },
-          { example: true, input: "500 -80", output: "420" },
-          { example: false, input: "1 1", output: "2" },
+          { is_example: true, input: "34 35", output: "69" },
+          { is_example: true, input: "500 -80", output: "420" },
+          { is_example: false, input: "1 1", output: "2" },
         ],
       },
     },
