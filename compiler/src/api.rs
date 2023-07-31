@@ -1,4 +1,5 @@
 use std::{fs, io::Write, path::PathBuf, process::Child, thread, time::Duration};
+use wait_timeout::ChildExt;
 
 pub enum ExecutionResult {
     CompileTimeError(String),
@@ -10,7 +11,7 @@ pub enum ExecutionResult {
 
 #[derive(serde::Deserialize)]
 pub struct Testcase {
-    pub timeout: u32,
+    pub timeout: u64,
     pub input: String,
     pub output: String,
 }
@@ -57,38 +58,30 @@ pub trait Compiler {
                 stdin.write_all(input.as_bytes()).unwrap();
             });
 
-            let mut timeout = true;
-            for _ in 0..testcase.timeout {
-                thread::sleep(Duration::new(0, 1000));
-
-                if let Ok(Some(_)) = user_program.try_wait() {
-                    timeout = false;
-
+            match user_program.wait_timeout(Duration::from_millis(testcase.timeout))? {
+                Some(_) => {
                     let user_program_status = user_program.wait_with_output()?;
-                    let stderr = String::from_utf8_lossy(&user_program_status.stderr);
-                    let stdout = String::from_utf8_lossy(&user_program_status.stdout);
 
                     if !user_program_status.status.success() {
+                        let stderr = String::from_utf8_lossy(&user_program_status.stderr);
                         let error_message =
                             format!("Input:\n{}\n\nError message:\n{}", testcase.input, stderr);
                         return Ok(ExecutionResult::RuntimeError((id, error_message)));
                     }
 
+                    let stdout = String::from_utf8_lossy(&user_program_status.stdout);
                     if stdout.trim() == testcase.output.trim() {
-                        break;
+                        continue;
                     }
                     let error_message =
                         format!("Input:\n{}\n\nOutput:\n{}", testcase.input, stdout);
                     return Ok(ExecutionResult::WrongAnswer((id, error_message)));
                 }
-            }
-
-            if !timeout {
-                continue;
-            }
-
-            let error_message = format!("Time limit: {}ms", testcase.timeout);
-            return Ok(ExecutionResult::TimeoutError((id, error_message)));
+                None => {
+                    let error_message = format!("Time limit: {}ms", testcase.timeout);
+                    return Ok(ExecutionResult::TimeoutError((id, error_message)));
+                }
+            };
         }
 
         Ok(ExecutionResult::Success)
