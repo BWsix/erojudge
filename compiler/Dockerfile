@@ -8,9 +8,7 @@
 # Create a stage for building the application.
 
 ARG RUST_VERSION=1.71.0
-ARG APP_NAME=compiler
 FROM rust:${RUST_VERSION}-slim-bullseye AS build
-ARG APP_NAME
 WORKDIR /app
 
 # Build the application.
@@ -28,7 +26,8 @@ RUN --mount=type=bind,source=src,target=src \
     <<EOF
 set -e
 cargo build --locked --release
-cp ./target/release/$APP_NAME /bin/server
+cp ./target/release/server /bin/server
+cp ./target/release/brainfuck /bin/brainfuck
 EOF
 
 ################################################################################
@@ -60,6 +59,7 @@ USER appuser
 
 # Copy the executable from the "build" stage.
 COPY --from=build /bin/server /bin/
+COPY --from=build /bin/brainfuck /bin/
 
 # Expose the port that the application listens on.
 EXPOSE 8080

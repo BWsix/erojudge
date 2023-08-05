@@ -91,3 +91,31 @@ impl api::Compiler for Python {
             .spawn()?)
     }
 }
+
+pub struct BrainFuck {}
+impl api::Compiler for BrainFuck {
+    fn build(
+        &self,
+        user_upload_path: &std::path::PathBuf,
+        built_program_path: &std::path::PathBuf,
+    ) -> Result<Option<api::ExecutionResult>, Box<dyn std::error::Error>> {
+        let content = fs::read_to_string(user_upload_path)?;
+        fs::write(built_program_path, content)?;
+        Ok(None)
+    }
+    fn get_process(
+        &self,
+        built_program_path: &std::path::PathBuf,
+    ) -> Result<std::process::Child, Box<dyn std::error::Error>> {
+        let content = fs::read_to_string(built_program_path)?;
+        let compiler_location = std::env::var("BRAINFUCK_COMPILER_LOCATION")
+            .unwrap_or_else(|_| "./target/debug/brainfuck".into());
+
+        Ok(Command::new(compiler_location)
+            .arg(content)
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()?)
+    }
+}

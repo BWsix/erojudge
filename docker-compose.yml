@@ -9,6 +9,7 @@ services:
     image: compiler
     environment:
       - ADDRESS=0.0.0.0:8080
+      - BRAINFUCK_COMPILER_LOCATION=brainfuck
   website:
     platform: "linux/amd64"
     build:

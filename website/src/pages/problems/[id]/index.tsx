@@ -49,9 +49,12 @@ export default function ProblemPage() {
           <option value="cpp">c++ (17)</option>
           <option value="c">c (11)</option>
           <option value="py">python (3.9)</option>
+          <option value="bf">
+            brainfuck (treats end of input as `\0`, overflow wraps around)
+          </option>
         </select>
         {session.status === "unauthenticated" && (
-          <button onClick={() => signIn()}>signIn</button>
+          <button onClick={() => signIn()}>signIn to submit code</button>
         )}
         {session.status === "authenticated" && (
           <button

@@ -38,6 +38,7 @@ async fn submit(submission: web::Json<api::Submission>) -> impl Responder {
         "cpp" => &compilers::Cpp {},
         "c" => &compilers::C {},
         "py" => &compilers::Python {},
+        "bf" => &compilers::BrainFuck {},
         _ => unreachable!(),
     };
     let execution_result = compiler.test(
